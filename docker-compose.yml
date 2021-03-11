@@ -1,0 +1,82 @@
+
+version: '3'
+
+networks:
+  prodnetwork:
+    driver: bridge
+
+volumes:
+  nexus-data:
+  jenVolume:
+    external: true
+  gitlabV:
+services:
+  nexus:
+    image: sonatype/nexus3
+    restart: always
+    ports:
+      - "8081:8081"
+    networks:
+      - prodnetwork
+    volumes:
+      - nexus-data:/nexus-data
+  jenkins:
+    image: jenkins/jenkins
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - prodnetwork
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+      - jenVolume:/var/jenkins_home 
+    
+    environment:
+      - NEXUS_PORT=8081
+      - SONAR_PORT=9000
+      - SONAR_DB_PORT=5432
+  sonardb:
+    networks:
+      - prodnetwork
+    restart: always
+    image: postgres:9.6
+    ports:
+      - "5432:5432"
+    environment:
+     - POSTGRES_USER=sonar
+     - POSTGRES_PASSWORD=sonar
+  sonar:
+    image: sonarqube:8.4.0-community
+    restart: always
+    ports:
+     - "19000:9000"
+     - "19092:9092"
+    networks:
+      - prodnetwork
+    depends_on:
+      - sonardb
+    environment:
+     - SONARQUBE_JDBC_URL=jdbc:postgresql://sonardb:5432/sonar
+     - SONARQUBE_JDBC_USERNAME=sonar
+     - SONARQUBE_JDBC_PASSWORD=sonar
+
+  gitlab:
+    image: gitlab/gitlab-ce:12.1.1-ce.0
+    restart: always
+    networks:
+      - prodnetwork
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:9090'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+    ports:
+      - '80:80'
+      - '443:443'
+      - '9090:9090'
+      - '2224:22'
+    volumes:
+      - gitlabV:/etc/gitlab
+        A
+      - gitlabV:/var/log/gitlab
+      - gitlabV:/var/opt/gitlab
