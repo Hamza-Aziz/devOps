@@ -1,4 +1,3 @@
-
 version: '3'
 
 networks:
@@ -9,7 +8,12 @@ volumes:
   nexus-data:
   jenVolume:
     external: true
-  gitlabV:
+  gitlab_myGitlaV1:
+    external: true
+  gitlab_myGitlaV2:
+    external: true
+  gitlab_myGitlaV3:
+    external: true
 services:
   nexus:
     image: sonatype/nexus3
@@ -22,6 +26,7 @@ services:
       - nexus-data:/nexus-data
   jenkins:
     image: jenkins/jenkins
+    
     restart: always
     ports:
       - "8080:8080"
@@ -48,6 +53,7 @@ services:
      - POSTGRES_PASSWORD=sonar
   sonar:
     image: sonarqube:8.4.0-community
+      
     restart: always
     ports:
      - "19000:9000"
@@ -61,22 +67,17 @@ services:
      - SONARQUBE_JDBC_USERNAME=sonar
      - SONARQUBE_JDBC_PASSWORD=sonar
 
-  gitlab:
-    image: gitlab/gitlab-ce:12.1.1-ce.0
-    restart: always
+  gitlab:  
+    image: gitlab/gitlab-ce
     networks:
       - prodnetwork
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://localhost:9090'
         gitlab_rails['gitlab_shell_ssh_port'] = 2224
-    ports:
-      - '80:80'
-      - '443:443'
-      - '9090:9090'
-      - '2224:22'
     volumes:
-      - gitlabV:/etc/gitlab
-        A
-      - gitlabV:/var/log/gitlab
-      - gitlabV:/var/opt/gitlab
+      - gitlab_myGitlaV1:/etc/gitlab
+    
+      - gitlab_myGitlaV2:/var/log/gitlab
+        
+      - gitlab_myGitlaV3:/var/opt/gitlab
