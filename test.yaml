@@ -1,37 +1,13 @@
-# JobDSL definition of the seed-job.
-# This job creates all other jobs from a Bitbucket repository.
-# With this mechanism, it is possible to have a simple job definition in your VCS and there is no need to make
-# backups of the jobs. Simply redeploy Jenkins and everything runs as before.
-# This job will also be used to add/delete jobs by simply adding new job definitions to the job file in this repository.
-jobs:
-  - script: >
-      job('seed_job') {
-          label('jenkins-master')
-          multiscm {
-              git {
-                  remote {
-                      url('https://github.com/Ragin-LundF/jenkins-jobdsl-remote.git')
-                  }
-                  extensions {
-                    relativeTargetDirectory('jobdslscript')
-                  }
-              }
-              git {
-                  remote {
-                      url('https://github.com/Ragin-LundF/k8s-jcasc-mgmt-example.git')
-                  }
-                  extensions {
-                    relativeTargetDirectory('jobdefinition')
-                  }
-              }
-          }
-          steps {
-              dsl {
-                  lookupStrategy('SEED_JOB')
-                  external('jobdslscript/JenkinsJobDslRemote.groovy')
-              }
-          }
-          triggers {
-              scm('* * * * *')
-          }
-      }
+jenkins:
+  systemMessage: "Example of configuring credentials in Jenkins"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "username"
+              username: "some-user"
+              password: "${SOME_USER_PASSWORD}"
+              description: "Username/Password Credentials for some-user"
