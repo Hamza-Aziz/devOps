@@ -1,17 +1,9 @@
 jenkins:
-  systemMessage: "Example of configuring credentials in Jenkins"
-  credentials:
-  system:
-    domainCredentials:
-      - domain:
-          name: "test.com"
-          description: "test.com domain"
-          specifications:
-            - hostnameSpecification:
-                includes: "*.test.com"
-        credentials:
-          - usernamePassword:
-              scope: SYSTEM
-              id: sudo_password
-              username: root
-              password: "${SUDO_PASSWORD}"
+  systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
+  globalNodeProperties:
+  - envVars:
+      env:
+      - key: VARIABLE1
+        value: foo
+      - key: VARIABLE2
+        value: bar
