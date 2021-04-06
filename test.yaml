@@ -9,5 +9,5 @@ credentials:
               scope: GLOBAL
               id: "username"
               username: "some-user"
-              password: "${SOME_USER_PASSWORD}"
+              password: "test"
               description: "Username/Password Credentials for some-user"
